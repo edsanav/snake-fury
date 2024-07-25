@@ -32,7 +32,10 @@ data GameState = GameState
 
 -- | This function should calculate the opposite movement.
 opositeMovement :: Movement -> Movement
-opositeMovement = undefined
+opositeMovement North = South
+opositeMovement South = North
+opositeMovement East = West
+opositeMovement West = East
 
 -- >>> opositeMovement North == South
 -- >>> opositeMovement South == North
@@ -44,7 +47,10 @@ opositeMovement = undefined
 --   You should take a look to System.Random documentation. 
 --   Also, in the import list you have all relevant functions.
 makeRandomPoint :: BoardInfo -> StdGen -> (Point, StdGen)
-makeRandomPoint = undefined
+makeRandomPoint (BoardInfo h w) gen =
+  let (row, gen2) = uniformR (1, h) gen
+      (col, gen3) = uniformR (1, w) gen2
+      in ((row, col), gen3)
 
 {-
 We can't test makeRandomPoint, because different implementation may lead to different valid result.
