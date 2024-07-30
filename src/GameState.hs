@@ -59,8 +59,9 @@ We can't test makeRandomPoint, because different implementation may lead to diff
 
 -- | Check if a point is in the snake
 inSnake :: Point -> SnakeSeq  -> Bool
-inSnake = undefined
-
+inSnake p (SnakeSeq sHead sBody) = (p == sHead) || case S.elemIndexL p sBody of 
+                                                     Nothing -> False
+                                                     Just _ -> True 
 {-
 This is a test for inSnake. It should return 
 True
