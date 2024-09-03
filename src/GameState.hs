@@ -76,7 +76,13 @@ False
 -- | Calculates de new head of the snake. Considering it is moving in the current direction
 --   Take into acount the edges of the board
 nextHead :: BoardInfo -> GameState -> Point
-nextHead = undefined
+nextHead (BoardInfo h w) (GameState (SnakeSeq (row, col) _) _ dir _) = case dir of 
+  North -> (prev row h, col)
+  South -> (next row h, col)
+  East -> (row, next col w)
+  West -> (row, prev col w)
+  where next v limit = if v == limit then 1 else v + 1
+        prev v limit = if v == 1 then limit else v - 1
 
 {-
 This is a test for nextHead. It should return
