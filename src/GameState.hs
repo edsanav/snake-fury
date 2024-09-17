@@ -1,10 +1,12 @@
+{-# LANGUAGE ViewPatterns #-}
+
 {-|
 This module defines the logic of the game and the communication with the `Board.RenderState`
 -}
 module GameState where 
 
 -- These are all the import. Feel free to use more if needed.
-import RenderState (BoardInfo (..), Point, DeltaBoard)
+import RenderState (BoardInfo (..), Point, DeltaBoard, CellType (..), )
 import qualified RenderState as Board
 import Data.Sequence ( Seq(..))
 import qualified Data.Sequence as S
@@ -103,8 +105,9 @@ True
 
 -- | Calculates a new random apple, avoiding creating the apple in the same place, or in the snake body
 newApple :: BoardInfo -> GameState -> (Point, StdGen)
-newApple = undefined
-
+newApple bi (GameState sp app mov rg) = case makeRandomPoint bi rg of
+  (newApp, newRg) | newApp == app || inSnake newApp sp -> newApple bi (GameState sp app mov newRg)
+  x -> x
 {- We can't test this function because it depends on makeRandomPoint -}
 
 
@@ -126,7 +129,33 @@ newApple = undefined
 -- 
 
 move :: BoardInfo -> GameState -> (Board.RenderMessage , GameState)
-move = undefined
+move bi gs@(GameState sp app mov rg) = undefined
+  where 
+    (newApp, newGen) = newApple bi gs
+    deltaAp = [(newApp, RenderState.Apple), (app, RenderState.Empty)]
+    
+
+-- Given a snake and direction, grows snake size by one 
+growSnake :: Point -> SnakeSeq -> (SnakeSeq, RenderState.DeltaBoard) 
+growSnake newHead (SnakeSeq oldHead oldBody) = (newSnake, delta)
+  where 
+    newSnake = SnakeSeq newHead (oldHead S.<| oldBody)
+    delta = if S.null oldBody
+            then [(newHead, RenderState.SnakeHead), (oldHead, RenderState.Snake)]
+            else [(newHead, RenderState.SnakeHead), (oldHead, RenderState.Snake), (latestElement oldBody, RenderState.Snake)]
+
+moveSnake:: Point  -> SnakeSeq -> (SnakeSeq, RenderState.DeltaBoard)
+moveSnake newHead (SnakeSeq oldHead (S.null -> True)) = (SnakeSeq newHead S.Empty, [(newHead, RenderState.SnakeHead), (oldHead, RenderState.Empty)])
+moveSnake newHead (SnakeSeq oldHead oldBody) = (newSnake, delta)
+  where
+    newSnake = SnakeSeq newHead (oldHead S.<| S.take (S.length oldBody - 1) oldBody)
+    delta = [(newHead, RenderState.SnakeHead), (oldHead, RenderState.Snake), (latestElement oldBody, RenderState.Empty)]
+
+
+latestElement :: S.Seq a -> a
+latestElement (S.viewr -> _ S.:> a ) = a
+latestElement (S.viewr -> S.EmptyR)  = error "Impossible: You are using this function wrong"
+
 
 {- This is a test for move. It should return
 
