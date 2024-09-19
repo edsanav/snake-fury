@@ -129,20 +129,22 @@ newApple bi (GameState sp app mov rg) = case makeRandomPoint bi rg of
 -- 
 
 move :: BoardInfo -> GameState -> (Board.RenderMessage , GameState)
-move bi gs@(GameState sp app mov rg) = undefined
-  where 
-    (newApp, newGen) = newApple bi gs
-    deltaAp = [(newApp, RenderState.Apple), (app, RenderState.Empty)]
-    
+move bi gs@(GameState sp app mov rg)
+  | nextH == app = (Board.RenderBoard ((newApp, RenderState.Apple):snakeDeltaGrow), GameState newSnakeGrow newApp mov newGen)
+  | inSnake nextH sp = (Board.GameOver, gs)
+  | otherwise = (Board.RenderBoard snakeDeltaMove, GameState newSnakeMove app mov rg)
+    where
+      (nextH) = nextHead bi gs
+      (newApp, newGen) = newApple bi gs
+      (newSnakeGrow, snakeDeltaGrow) = growSnake nextH sp
+      (newSnakeMove, snakeDeltaMove) = moveSnake nextH sp
 
 -- Given a snake and direction, grows snake size by one 
 growSnake :: Point -> SnakeSeq -> (SnakeSeq, RenderState.DeltaBoard) 
 growSnake newHead (SnakeSeq oldHead oldBody) = (newSnake, delta)
   where 
     newSnake = SnakeSeq newHead (oldHead S.<| oldBody)
-    delta = if S.null oldBody
-            then [(newHead, RenderState.SnakeHead), (oldHead, RenderState.Snake)]
-            else [(newHead, RenderState.SnakeHead), (oldHead, RenderState.Snake), (latestElement oldBody, RenderState.Snake)]
+    delta = [(newHead, RenderState.SnakeHead), (oldHead, RenderState.Snake)]
 
 moveSnake:: Point  -> SnakeSeq -> (SnakeSeq, RenderState.DeltaBoard)
 moveSnake newHead (SnakeSeq oldHead (S.null -> True)) = (SnakeSeq newHead S.Empty, [(newHead, RenderState.SnakeHead), (oldHead, RenderState.Empty)])
@@ -174,3 +176,6 @@ RenderBoard [((4,1),SnakeHead),((1,1),Snake),((1,3),Empty)]
 -- >>> fst $ move board_info game_state1
 -- >>> fst $ move board_info game_state2
 -- >>> fst $ move board_info game_state3
+-- RenderBoard [((1,4),SnakeHead),((1,1),Snake),((1,3),Empty)]
+-- RenderBoard [((2,4),Apple),((2,1),SnakeHead),((1,1),Snake)]
+-- RenderBoard [((4,1),SnakeHead),((1,1),Snake),((1,3),Empty)]
