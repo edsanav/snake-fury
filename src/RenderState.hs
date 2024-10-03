@@ -51,7 +51,7 @@ data RenderState   = RenderState {board :: Board, gameOver :: Bool} deriving Sho
 
 -- | Given The board info, this function should return a board with all Empty cells
 emptyGrid :: BoardInfo -> Board
-emptyGrid = undefined
+emptyGrid (BoardInfo h w) = listArray ((1,1),(h,w)) $ repeat Empty
 
 {- 
 This is a test for emptyGrid. It should return 
@@ -66,18 +66,21 @@ buildInitialBoard
   -> Point     -- ^ initial point of the snake
   -> Point     -- ^ initial Point of the apple
   -> RenderState
-buildInitialBoard = undefined
+buildInitialBoard b snakeH app = RenderState{ board=emptyGrid b // [(snakeH, SnakeHead),(app, Apple)] ,  gameOver=False}
+
 
 {- 
 This is a test for buildInitialBoard. It should return 
 RenderState {board = array ((1,1),(2,2)) [((1,1),SnakeHead),((1,2),Empty),((2,1),Empty),((2,2),Apple)], gameOver = False}
 -}
 -- >>> buildInitialBoard (BoardInfo 2 2) (1,1) (2,2)
+-- RenderState {board = array ((1,1),(2,2)) [((1,1),SnakeHead),((1,2),Empty),((2,1),Empty),((2,2),Apple)], gameOver = False}
 
 
 -- | Given tye current render state, and a message -> update the render state
 updateRenderState :: RenderState -> RenderMessage -> RenderState
-updateRenderState = undefined
+updateRenderState (RenderState b _) GameOver = RenderState b True
+updateRenderState (RenderState b g) d = undefined
 
 {-
 This is a test for updateRenderState

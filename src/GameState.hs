@@ -101,6 +101,9 @@ True
 -- >>> nextHead board_info game_state1 == (1,4)
 -- >>> nextHead board_info game_state2 == (2,1)
 -- >>> nextHead board_info game_state3 == (4,1)
+-- True
+-- True
+-- True
 
 
 -- | Calculates a new random apple, avoiding creating the apple in the same place, or in the snake body
@@ -179,3 +182,4 @@ RenderBoard [((4,1),SnakeHead),((1,1),Snake),((1,3),Empty)]
 -- RenderBoard [((1,4),SnakeHead),((1,1),Snake),((1,3),Empty)]
 -- RenderBoard [((2,4),Apple),((2,1),SnakeHead),((1,1),Snake)]
 -- RenderBoard [((4,1),SnakeHead),((1,1),Snake),((1,3),Empty)]
+
